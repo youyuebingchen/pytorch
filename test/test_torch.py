@@ -11351,6 +11351,19 @@ class TestTorchDeviceType(TestCase):
         a_bool.sign_()
         self.assertEqual(a_bool, a_bool_target, msg='sign_ device={} dtype=bool'.format(device))
 
+    @dtypes(torch.cfloat, torch.cdouble)
+    def test_sgn(self, device, dtype):
+        x = torch.randn(100, dtype=dtype)
+        angle = x.angle()
+        out = x.sgn()
+        self.assertEqual(out.angle(), angle)
+        self.assertEqual(out.abs(), torch.ones_like(x).real)
+
+        x_out = torch.empty_like(x)
+        torch.sgn(x, out=x_out)
+        self.assertEqual(x_out.angle(), angle)
+        self.assertEqual(x_out.abs(), torch.ones_like(x).real)
+
     def test_logical_any(self, device):
         x = torch.zeros([2, 3, 400], dtype=torch.uint8, device=device)
 
@@ -15030,6 +15043,8 @@ class TestTorchDeviceType(TestCase):
                 lambda x, y: x.logit_(1e-6),
                 lambda x, y: x.sign(),
                 lambda x, y: x.sign_(),
+                lambda x, y: x.sgn(),
+                lambda x, y: x.sgn_(),
                 lambda x, y: x.sin(),
                 lambda x, y: x.sin_(),
                 lambda x, y: x.sinh(),
